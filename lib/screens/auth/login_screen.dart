@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:restaurante_py/services/auth_service.dart';
-import 'register_screen.dart';
+import 'package:restaurante_py/screens/admin/admin_home_view.dart';
 import 'package:restaurante_py/screens/users/home.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,17 +32,24 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = true);
 
     try {
-      final token = await AuthService.login(username, password);
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString("token", token);
+      await AuthService.login(username, password);
+      
+      final role = await AuthService.getRole();
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+      // Redirigir según el rol
+      if (role == "ROLE_ADMIN") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminHomeScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
 
