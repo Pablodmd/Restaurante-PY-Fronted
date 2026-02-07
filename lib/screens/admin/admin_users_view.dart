@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:restaurante_py/models/user.dart';
 import 'package:restaurante_py/services/user_service.dart';
 
@@ -104,15 +105,14 @@ class _AdminUsersViewState extends State<AdminUsersView> {
         );
       }
 
-      // Recargar la lista
       await _loadUsers();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
+            content: const Text(
               'Error al desactivar usuario',
-              style: const TextStyle(fontFamily: 'serif'),
+              style: TextStyle(fontFamily: 'serif'),
             ),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
@@ -123,6 +123,12 @@ class _AdminUsersViewState extends State<AdminUsersView> {
         );
       }
     }
+  }
+
+  Color _getAvatarColor(int index) {
+    return index % 2 == 0 
+        ? const Color(0xFFF2D67B)
+        : const Color(0xFF5A2D2D);
   }
 
   @override
@@ -138,7 +144,6 @@ class _AdminUsersViewState extends State<AdminUsersView> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  /// HEADER
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -167,7 +172,6 @@ class _AdminUsersViewState extends State<AdminUsersView> {
 
                   const SizedBox(height: 24),
 
-                  /// CARD PRINCIPAL
                   Expanded(
                     child: Center(
                       child: ConstrainedBox(
@@ -179,7 +183,6 @@ class _AdminUsersViewState extends State<AdminUsersView> {
                           ),
                           child: Column(
                             children: [
-                              /// TÍTULO DE LA CARD
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
@@ -205,10 +208,8 @@ class _AdminUsersViewState extends State<AdminUsersView> {
                                 ),
                               ),
 
-                              /// SEPARADOR
                               Container(height: 2, color: Colors.black),
 
-                              /// LISTA DE USUARIOS
                               Expanded(child: _buildUsersList()),
                             ],
                           ),
@@ -293,35 +294,24 @@ class _AdminUsersViewState extends State<AdminUsersView> {
       separatorBuilder: (_, __) => Container(height: 1, color: Colors.black),
       itemBuilder: (context, index) {
         final user = _users[index];
-        final isActive = !user.deleted;
 
-        return Dismissible(
+        return Slidable(
           key: ValueKey(user.id),
-          direction: DismissDirection.endToStart,
-          background: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          endActionPane: ActionPane(
+            motion: const DrawerMotion(),
+            extentRatio: 0.25, // Ocupa el 25% del ancho
             children: [
-              Container(
-                width: 60,
-                color: Colors.green,
-                alignment: Alignment.center,
-                child: const Icon(Icons.check, color: Colors.white, size: 30),
-              ),
-              Container(
-                width: 60,
-                color: Colors.red,
-                alignment: Alignment.center,
-                child: const Icon(Icons.delete, color: Colors.white, size: 30),
+              SlidableAction(
+                onPressed: (context) {
+                  _showDeleteConfirmation(user);
+                },
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                icon: Icons.delete,
+                label: '',
               ),
             ],
           ),
-          confirmDismiss: (direction) async {
-            // Mostrar diálogo de confirmación
-            await _showDeleteConfirmation(user);
-            // Retornar false para no eliminar el item automáticamente
-            // (se recargará la lista después de la confirmación)
-            return false;
-          },
           child: Container(
             color: const Color(0xFFE8E8E8),
             child: ListTile(
@@ -331,9 +321,7 @@ class _AdminUsersViewState extends State<AdminUsersView> {
               ),
               leading: CircleAvatar(
                 radius: 20,
-                backgroundColor: isActive
-                    ? const Color(0xFFF2D67B)
-                    : const Color(0xFF5A2D2D),
+                backgroundColor: _getAvatarColor(index),
                 child: Text(
                   user.username.isNotEmpty
                       ? user.username[0].toUpperCase()
