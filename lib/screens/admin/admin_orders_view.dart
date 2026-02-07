@@ -34,18 +34,14 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
         : const Color(0xFF5A2D2D);
   }
 
-  String _getStatusText(String status) {
-    return status;
-  }
-
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Pendiente':
         return Colors.orange;
       case 'En proceso':
         return Colors.blue;
-      case 'Entregado':
       case 'Completado':
+      case 'Entregado':
         return Colors.green;
       default:
         return Colors.grey;
@@ -91,10 +87,11 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
                     ],
                   ),
                   const SizedBox(height: 24),
+                  
                   Expanded(
                     child: Center(
                       child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 360),
+                        constraints: const BoxConstraints(maxWidth: 600),
                         child: _buildOrdersSections(),
                       ),
                     ),
@@ -104,6 +101,11 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.read<OrderProvider>().loadAllOrders(),
+        backgroundColor: const Color(0xFFF2D67B),
+        child: const Icon(Icons.refresh, color: Colors.black),
       ),
     );
   }
@@ -163,15 +165,19 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
           child: Column(
             children: [
               _buildOrderSection(
-                title: "Pedidos Pendientes",
+                title: "Pedidos Activos",
                 orders: activeOrders,
                 isEmpty: activeOrders.isEmpty,
+                emptyMessage: "No hay pedidos activos",
               ),
+              
               const SizedBox(height: 16),
+              
               _buildOrderSection(
                 title: "Pedidos Finalizados",
                 orders: completedOrders,
                 isEmpty: completedOrders.isEmpty,
+                emptyMessage: "No hay pedidos finalizados",
               ),
             ],
           ),
@@ -184,6 +190,7 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
     required String title,
     required List<Order> orders,
     required bool isEmpty,
+    required String emptyMessage,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -205,28 +212,63 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
                 topRight: Radius.circular(12),
               ),
             ),
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-                fontFamily: 'serif',
-                color: Colors.black,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'serif',
+                    color: Colors.black,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF2D67B),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${orders.length}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'serif',
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
+          
           Container(height: 2, color: Colors.black),
+          
           if (isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                "No hay pedidos",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.black54,
-                  fontFamily: 'serif',
-                ),
+            Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.shopping_bag_outlined,
+                    size: 48,
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    emptyMessage,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                      fontFamily: 'serif',
+                    ),
+                  ),
+                ],
               ),
             )
           else
@@ -235,7 +277,8 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               itemCount: orders.length,
-              separatorBuilder: (_, __) => Container(height: 1, color: Colors.black),
+              separatorBuilder: (_, __) => 
+                  Container(height: 1, color: Colors.black),
               itemBuilder: (context, index) {
                 final order = orders[index];
                 return _buildOrderItem(order, index);
@@ -247,11 +290,13 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
   }
 
   Widget _buildOrderItem(Order order, int index) {
+    final dateFormat = DateFormat('dd/MM HH:mm');
+    
     return Slidable(
       key: ValueKey(order.id),
       endActionPane: ActionPane(
         motion: const DrawerMotion(),
-        extentRatio: 0.5,
+        extentRatio: 0.4,
         children: [
           SlidableAction(
             onPressed: (context) async {
@@ -261,19 +306,8 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
             },
             backgroundColor: const Color(0xFFF2D67B),
             foregroundColor: Colors.black,
-            icon: Icons.edit,
-            label: 'Editar',
-          ),
-          SlidableAction(
-            onPressed: (context) async {
-              Slidable.of(context)?.close();
-              await Future.delayed(const Duration(milliseconds: 100));
-              _showOrderDetails(order);
-            },
-            backgroundColor: const Color(0xFF64B5F6),
-            foregroundColor: Colors.white,
-            icon: Icons.info,
-            label: 'Detalles',
+            icon: Icons.visibility,
+            label: 'Ver',
           ),
         ],
       ),
@@ -282,63 +316,100 @@ class _AdminOrdersViewState extends State<AdminOrdersView> {
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
-            vertical: 8,
+            vertical: 12,
           ),
           leading: CircleAvatar(
-            radius: 20,
+            radius: 24,
             backgroundColor: _getAvatarColor(index),
             child: Text(
-              'P',
+              '${order.tableNumber}',
               style: const TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 16,
                 fontFamily: 'serif',
               ),
             ),
           ),
-          title: Text(
-            'Pedido ${order.id}',
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-              fontFamily: 'serif',
-              color: Colors.black,
-            ),
-          ),
-          subtitle: Text(
-            'Mesa ${order.tableNumber} • ${order.total.toStringAsFixed(2)}€',
-            style: const TextStyle(
-              fontSize: 12,
-              fontFamily: 'serif',
-              color: Colors.black54,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
+          title: Row(
             children: [
+              Text(
+                'Pedido #${order.id}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  fontFamily: 'serif',
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 2,
+                ),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(order.status).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  color: _getStatusColor(order.status).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(8),
                   border: Border.all(
                     color: _getStatusColor(order.status),
-                    width: 1,
+                    width: 1.5,
                   ),
                 ),
                 child: Text(
-                  _getStatusText(order.status),
+                  order.status,
                   style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 11,
                     fontFamily: 'serif',
                     color: _getStatusColor(order.status),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              const Icon(Icons.chevron_left, color: Colors.black),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              Text(
+                'Mesa ${order.tableNumber} • ${order.orderLines.length} producto(s)',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontFamily: 'serif',
+                  color: Colors.black87,
+                ),
+              ),
+              if (order.dateOrder != null)
+                Text(
+                  dateFormat.format(order.dateOrder!),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'serif',
+                    color: Colors.black54,
+                  ),
+                ),
+            ],
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${order.total.toStringAsFixed(2)}€',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  fontFamily: 'serif',
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Icon(
+                Icons.chevron_left,
+                color: Colors.black54,
+                size: 20,
+              ),
             ],
           ),
         ),
@@ -366,6 +437,7 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
   final List<String> _statuses = [
     'Pendiente',
     'En proceso',
+    'Completado',
     'Entregado',
   ];
 
@@ -448,25 +520,21 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
               ),
               const SizedBox(height: 20),
 
-              _buildReadOnlyField('Pedido #', '${widget.order.id}'),
-              const SizedBox(height: 12),
-
-              _buildReadOnlyField('Mesa', '${widget.order.tableNumber}'),
-              const SizedBox(height: 12),
-
-              _buildReadOnlyField(
-                'Fecha',
-                widget.order.dateOrder != null
-                    ? dateFormat.format(widget.order.dateOrder!)
-                    : 'N/A',
-              ),
-              const SizedBox(height: 12),
-
-              _buildReadOnlyField(
+              _buildInfoRow('Pedido #', '${widget.order.id}'),
+              _buildInfoRow('Mesa', '${widget.order.tableNumber}'),
+              if (widget.order.dateOrder != null)
+                _buildInfoRow(
+                  'Fecha',
+                  dateFormat.format(widget.order.dateOrder!),
+                ),
+              _buildInfoRow(
                 'Total',
                 '${widget.order.total.toStringAsFixed(2)}€',
               ),
+
               const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 12),
 
               const Text(
                 'Productos:',
@@ -479,10 +547,11 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
               const SizedBox(height: 8),
 
               Container(
-                constraints: const BoxConstraints(maxHeight: 200),
+                constraints: const BoxConstraints(maxHeight: 250),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black26),
                   borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
                 ),
                 child: ListView.separated(
                   shrinkWrap: true,
@@ -490,32 +559,48 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final line = widget.order.orderLines[index];
-                    return ListTile(
-                      dense: true,
-                      title: Text(
-                        line.product.name,
-                        style: const TextStyle(
-                          fontFamily: 'serif',
-                          fontSize: 14,
-                        ),
-                      ),
-                      subtitle: line.notes != null && line.notes!.isNotEmpty
-                          ? Text(
-                              'Nota: ${line.notes}',
-                              style: const TextStyle(
-                                fontFamily: 'serif',
-                                fontSize: 12,
-                                fontStyle: FontStyle.italic,
+                    return Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${line.amount}x ${line.product.name}',
+                                  style: const TextStyle(
+                                    fontFamily: 'serif',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
                               ),
-                            )
-                          : null,
-                      trailing: Text(
-                        '${line.amount}x ${line.price.toStringAsFixed(2)}€',
-                        style: const TextStyle(
-                          fontFamily: 'serif',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
+                              Text(
+                                '${line.subtotal.toStringAsFixed(2)}€',
+                                style: const TextStyle(
+                                  fontFamily: 'serif',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (line.notes != null && line.notes!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                'Nota: ${line.notes}',
+                                style: const TextStyle(
+                                  fontFamily: 'serif',
+                                  fontSize: 12,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     );
                   },
@@ -523,6 +608,8 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
               ),
 
               const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 12),
 
               const Text(
                 'Estado del pedido:',
@@ -540,7 +627,10 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
                   border: OutlineInputBorder(),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 12,
+                  ),
                 ),
                 items: _statuses.map((status) {
                   return DropdownMenuItem<String>(
@@ -603,38 +693,31 @@ class _OrderDetailsDialogState extends State<OrderDetailsDialog> {
     );
   }
 
-  Widget _buildReadOnlyField(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            fontFamily: 'serif',
-            color: Colors.black54,
-            fontWeight: FontWeight.w500,
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: 'serif',
+              color: Colors.black54,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.black26),
-          ),
-          child: Text(
+          Text(
             value,
             style: const TextStyle(
               fontSize: 14,
               fontFamily: 'serif',
+              fontWeight: FontWeight.w500,
               color: Colors.black87,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

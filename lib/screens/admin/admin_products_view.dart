@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:restaurante_py/models/product.dart';
@@ -75,7 +73,11 @@ class _AdminProductsViewState extends State<AdminProductsView> {
     final provider = context.read<ProductProvider>();
 
     try {
-      await provider.deleteProduct(product.id);
+      if (product.id == null) {
+        throw Exception('El producto no tiene ID válido');
+      }
+      
+      await provider.deleteProduct(product.id!);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -286,7 +288,7 @@ class _AdminProductsViewState extends State<AdminProductsView> {
             final product = provider.products[index];
 
             return Slidable(
-              key: ValueKey(product.id),
+              key: ValueKey(product.id ?? index),
               endActionPane: ActionPane(
                 motion: const DrawerMotion(),
                 extentRatio: 0.5,
@@ -444,7 +446,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
 
     try {
       final product = Product(
-        id: widget.product?.id ?? 0,
+        id: widget.product?.id,
         name: _nameController.text.trim(),
         price: double.parse(_priceController.text.trim()),
         description: _descriptionController.text.trim(),
@@ -458,7 +460,10 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
       if (widget.product == null) {
         await provider.createProduct(product);
       } else {
-        await provider.updateProduct(product.id, product);
+        if (product.id == null) {
+          throw Exception('El producto no tiene ID válido');
+        }
+        await provider.updateProduct(product.id!, product);
       }
 
       if (mounted) {
@@ -561,7 +566,7 @@ class _ProductFormDialogState extends State<ProductFormDialog> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  initialValue: _selectedCategory,
+                  value: _selectedCategory,
                   decoration: const InputDecoration(
                     labelText: 'Categoría',
                     border: OutlineInputBorder(),

@@ -1,5 +1,5 @@
 class Product {
-  final int id;
+  final int? id;
   final String name;
   final double price;
   final String description;
@@ -8,7 +8,7 @@ class Product {
   final double preparationTime;
 
   Product({
-    required this.id,
+    this.id, 
     required this.name,
     required this.price,
     required this.description,
@@ -19,12 +19,12 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'] ?? 0,
+      id: json['id'],  
       name: json['name'] ?? '',
       price: (json['price'] ?? 0).toDouble(),
       description: json['description'] ?? '',
       category: json['category'] ?? '',
-      available: json['available'] ?? true,
+      available: json['available'] ?? false,
       preparationTime: (json['preparationTime'] ?? 0).toDouble(),
     );
   }

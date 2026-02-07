@@ -23,12 +23,14 @@ class Order {
       dateOrder: json['dateOrder'] != null 
           ? DateTime.parse(json['dateOrder']) 
           : null,
-      status: json['status'],
-      total: json['total'].toDouble(),
-      tableNumber: json['tableNumber'],
-      orderLines: (json['orderLines'] as List)
-          .map((line) => OrderLine.fromJson(line))
-          .toList(),
+      status: json['status'] ?? 'Pendiente',
+      total: (json['total'] ?? 0).toDouble(),
+      tableNumber: json['tableNumber'] ?? 0,
+      orderLines: json['orderLines'] != null
+          ? (json['orderLines'] as List)
+              .map((line) => OrderLine.fromJson(line))
+              .toList()
+          : [],
     );
   }
 
