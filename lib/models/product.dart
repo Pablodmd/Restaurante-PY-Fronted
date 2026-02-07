@@ -19,16 +19,29 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: json['id'],
-      name: json['name'],
-      price: json['price'].toDouble(),
-      description: json['description'],
-      category: json['category'],
-      available: json['available'],
-      preparationTime: json['preparationTime'].toDouble(),
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      price: (json['price'] ?? 0).toDouble(),
+      description: json['description'] ?? '',
+      category: json['category'] ?? '',
+      available: json['available'] ?? true,
+      preparationTime: (json['preparationTime'] ?? 0).toDouble(),
     );
   }
 
+  // Método para crear sin ID (para POST)
+  Map<String, dynamic> toJsonCreate() {
+    return {
+      'name': name,
+      'price': price,
+      'description': description,
+      'category': category,
+      'available': available,
+      'preparationTime': preparationTime,
+    };
+  }
+
+  // Método para actualizar con ID (para PUT)
   Map<String, dynamic> toJson() {
     return {
       'id': id,

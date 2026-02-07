@@ -4,6 +4,7 @@ import '../services/product_service.dart';
 
 class ProductProvider with ChangeNotifier {
   final ProductService _productService = ProductService();
+
   List<Product> _products = [];
   bool _isLoading = false;
   String? _error;
@@ -25,6 +26,36 @@ class ProductProvider with ChangeNotifier {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  // NUEVO: Crear producto
+  Future<void> createProduct(Product product) async {
+    try {
+      await _productService.createProduct(product);
+      await loadProducts(); // Recargar la lista
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // NUEVO: Actualizar producto
+  Future<void> updateProduct(int id, Product product) async {
+    try {
+      await _productService.updateProduct(id, product);
+      await loadProducts(); // Recargar la lista
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // NUEVO: Eliminar producto
+  Future<void> deleteProduct(int id) async {
+    try {
+      await _productService.deleteProduct(id);
+      await loadProducts(); // Recargar la lista
+    } catch (e) {
+      rethrow;
     }
   }
 

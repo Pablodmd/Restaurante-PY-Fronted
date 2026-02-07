@@ -17,7 +17,6 @@ class ProductService {
     if (token == null || token.isEmpty) {
       throw Exception('No hay token de autenticación');
     }
-
     return {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -27,9 +26,8 @@ class ProductService {
   Future<List<Product>> getAllProducts() async {
     try {
       final headers = await _getHeaders();
-
       final response = await http.get(
-        Uri.parse('$_baseUrl/users/products'),
+        Uri.parse('$_baseUrl/users/products'),  // Este endpoint es público
         headers: headers,
       );
 
@@ -40,6 +38,93 @@ class ProductService {
         throw Exception('Sesión expirada. Inicia sesión nuevamente');
       } else {
         throw Exception('Error al obtener productos: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException')) {
+        throw Exception('No se pudo conectar al servidor');
+      }
+      rethrow;
+    }
+  }
+
+  // Crear producto - ENDPOINT DE ADMIN
+  Future<Product> createProduct(Product product) async {
+    try {
+      final headers = await _getHeaders();
+      
+      final body = json.encode(product.toJsonCreate());
+      
+      final response = await http.post(
+        Uri.parse('$_baseUrl/admin/products'),  // ← CAMBIO AQUÍ
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return Product.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        throw Exception('Sesión expirada. Inicia sesión nuevamente');
+      } else if (response.statusCode == 403) {
+        throw Exception('No tienes permisos de administrador');
+      } else {
+        throw Exception('Error al crear producto: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException')) {
+        throw Exception('No se pudo conectar al servidor');
+      }
+      rethrow;
+    }
+  }
+
+  // Actualizar producto - ENDPOINT DE ADMIN
+  Future<Product> updateProduct(int id, Product product) async {
+    try {
+      final headers = await _getHeaders();
+      
+      final body = json.encode(product.toJsonCreate());  // Usar toJsonCreate sin el id
+ 
+      final response = await http.put(
+        Uri.parse('$_baseUrl/admin/products/$id'),  // ← CAMBIO AQUÍ
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        return Product.fromJson(json.decode(response.body));
+      } else if (response.statusCode == 401) {
+        throw Exception('Sesión expirada. Inicia sesión nuevamente');
+      } else if (response.statusCode == 403) {
+        throw Exception('No tienes permisos de administrador');
+      } else {
+        throw Exception('Error al actualizar producto: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException')) {
+        throw Exception('No se pudo conectar al servidor');
+      }
+      rethrow;
+    }
+  }
+
+  // Eliminar producto - ENDPOINT DE ADMIN
+  Future<void> deleteProduct(int id) async {
+    try {
+      final headers = await _getHeaders();
+     
+      final response = await http.delete(
+        Uri.parse('$_baseUrl/admin/products/$id'),  // ← CAMBIO AQUÍ
+        headers: headers,
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return;
+      } else if (response.statusCode == 401) {
+        throw Exception('Sesión expirada. Inicia sesión nuevamente');
+      } else if (response.statusCode == 403) {
+        throw Exception('No tienes permisos de administrador');
+      } else {
+        throw Exception('Error al eliminar producto: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
       if (e.toString().contains('SocketException')) {
