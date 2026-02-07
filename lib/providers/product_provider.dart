@@ -29,31 +29,28 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // NUEVO: Crear producto
   Future<void> createProduct(Product product) async {
     try {
       await _productService.createProduct(product);
-      await loadProducts(); // Recargar la lista
+      await loadProducts(); 
     } catch (e) {
       rethrow;
     }
   }
 
-  // NUEVO: Actualizar producto
   Future<void> updateProduct(int id, Product product) async {
     try {
       await _productService.updateProduct(id, product);
-      await loadProducts(); // Recargar la lista
+      await loadProducts(); 
     } catch (e) {
       rethrow;
     }
   }
 
-  // NUEVO: Eliminar producto
   Future<void> deleteProduct(int id) async {
     try {
       await _productService.deleteProduct(id);
-      await loadProducts(); // Recargar la lista
+      await loadProducts(); 
     } catch (e) {
       rethrow;
     }

@@ -18,11 +18,11 @@ class AuthService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final token = data["token"];
-      final role = data["role"]; // ✅ Ahora viene del backend
+      final role = data["role"]; 
       
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
-      await prefs.setString('role', role); // ✅ Guardamos el rol real
+      await prefs.setString('role', role); 
       
       return token;
     } else {
@@ -45,14 +45,23 @@ class AuthService {
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       return;
     }
 
-    final message = response.body.toLowerCase();
-    if (message.contains("username is already taken")) {
-      throw Exception("Ese nombre de usuario ya existe");
+    if (response.statusCode == 400) {
+      final data = json.decode(response.body);
+      final message = data["message"]?.toString().toLowerCase() ?? response.body.toLowerCase();
+      
+      if (message.contains("username") && message.contains("already")) {
+        throw Exception("Ese nombre de usuario ya existe");
+      }
+      if (message.contains("email") && message.contains("already")) {
+        throw Exception("Ese correo electrónico ya existe");
+      }
+      throw Exception(data["message"] ?? "Error al registrar usuario");
     }
+
     throw Exception("Error al registrar usuario");
   }
 

@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
-      (route) => false, // elimina todo el historial
+      (route) => false, 
     );
   }
 

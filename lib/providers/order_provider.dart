@@ -4,6 +4,7 @@ import '../services/order_service.dart';
 
 class OrderProvider with ChangeNotifier {
   final OrderService _orderService = OrderService();
+  
   List<Order> _orders = [];
   bool _isLoading = false;
   String? _error;
@@ -43,6 +44,45 @@ class OrderProvider with ChangeNotifier {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> loadAllOrders() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _orders = await _orderService.getAllOrders();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateOrderStatus(int orderId, String newStatus) async {
+    try {
+      await _orderService.updateOrderStatus(orderId, newStatus);
+      
+      final index = _orders.indexWhere((order) => order.id == orderId);
+      if (index != -1) {
+        _orders[index] = Order(
+          id: _orders[index].id,
+          dateOrder: _orders[index].dateOrder,
+          status: newStatus,
+          total: _orders[index].total,
+          tableNumber: _orders[index].tableNumber,
+          orderLines: _orders[index].orderLines,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      rethrow;
     }
   }
 

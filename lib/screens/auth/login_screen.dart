@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:restaurante_py/services/auth_service.dart';
 import 'package:restaurante_py/screens/admin/admin_home_view.dart';

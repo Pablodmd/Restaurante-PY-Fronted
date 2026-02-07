@@ -29,7 +29,6 @@ class Product {
     );
   }
 
-  // Método para crear sin ID (para POST)
   Map<String, dynamic> toJsonCreate() {
     return {
       'name': name,
@@ -41,7 +40,6 @@ class Product {
     };
   }
 
-  // Método para actualizar con ID (para PUT)
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -6,13 +6,11 @@ import '../models/user.dart';
 class UserService {
   static const String _baseUrl = 'https://restaurante-py-backend-kzg8.onrender.com';
 
-  // Método para obtener el token almacenado
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
 
-  // Headers con autenticación
   Future<Map<String, String>> _getHeaders() async {
     final token = await _getToken();
     
@@ -26,7 +24,6 @@ class UserService {
     };
   }
 
-  // Obtener todos los usuarios
   Future<List<User>> getAllUsers() async {
     try {
       final headers = await _getHeaders();
@@ -54,7 +51,6 @@ class UserService {
     }
   }
 
-  // Obtener usuario por ID
   Future<User> getUserById(int id) async {
     try {
       final headers = await _getHeaders();
@@ -81,7 +77,6 @@ class UserService {
     }
   }
 
-  // Eliminar usuario
   Future<void> deleteUser(int id) async {
     try {
       final headers = await _getHeaders();

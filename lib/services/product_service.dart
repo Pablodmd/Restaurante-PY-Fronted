@@ -27,7 +27,7 @@ class ProductService {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse('$_baseUrl/users/products'),  // Este endpoint es público
+        Uri.parse('$_baseUrl/users/products'),
         headers: headers,
       );
 
@@ -47,7 +47,6 @@ class ProductService {
     }
   }
 
-  // Crear producto - ENDPOINT DE ADMIN
   Future<Product> createProduct(Product product) async {
     try {
       final headers = await _getHeaders();
@@ -55,7 +54,7 @@ class ProductService {
       final body = json.encode(product.toJsonCreate());
       
       final response = await http.post(
-        Uri.parse('$_baseUrl/admin/products'),  // ← CAMBIO AQUÍ
+        Uri.parse('$_baseUrl/admin/products'),
         headers: headers,
         body: body,
       );
@@ -77,15 +76,14 @@ class ProductService {
     }
   }
 
-  // Actualizar producto - ENDPOINT DE ADMIN
   Future<Product> updateProduct(int id, Product product) async {
     try {
       final headers = await _getHeaders();
       
-      final body = json.encode(product.toJsonCreate());  // Usar toJsonCreate sin el id
+      final body = json.encode(product.toJsonCreate()); 
  
       final response = await http.put(
-        Uri.parse('$_baseUrl/admin/products/$id'),  // ← CAMBIO AQUÍ
+        Uri.parse('$_baseUrl/admin/products/$id'),
         headers: headers,
         body: body,
       );
@@ -107,13 +105,12 @@ class ProductService {
     }
   }
 
-  // Eliminar producto - ENDPOINT DE ADMIN
   Future<void> deleteProduct(int id) async {
     try {
       final headers = await _getHeaders();
      
       final response = await http.delete(
-        Uri.parse('$_baseUrl/admin/products/$id'),  // ← CAMBIO AQUÍ
+        Uri.parse('$_baseUrl/admin/products/$id'),
         headers: headers,
       );
 

@@ -104,7 +104,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  /// HEADER
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -130,7 +129,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
                   const SizedBox(height: 24),
 
-                  /// BIENVENIDA
                   Container(
                     width: double.infinity,
                     constraints: const BoxConstraints(maxWidth: 320),
@@ -156,7 +154,6 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 
                   const SizedBox(height: 24),
 
-                  /// TARJETAS
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(

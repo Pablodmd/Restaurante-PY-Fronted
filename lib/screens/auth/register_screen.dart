@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         const SnackBar(content: Text("Usuario creado correctamente")),
       );
 
-      Navigator.pop(context); // volver al login
+      Navigator.pop(context);
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -164,7 +164,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 child: const Text("Volver", style: TextStyle(color: Colors.white)),
                               ),
 
-                              /// 🔥 BOTÓN REGISTRARSE CON LOADING SIN DESAPARECER
                               Stack(
                                 alignment: Alignment.center,
                                 children: [

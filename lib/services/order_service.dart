@@ -27,7 +27,6 @@ class OrderService {
   Future<Order> createOrder(Order order) async {
     try {
       final headers = await _getHeaders();
-
       final response = await http.post(
         Uri.parse('$_baseUrl/orders'),
         headers: headers,
@@ -53,7 +52,6 @@ class OrderService {
   Future<List<Order>> getMyOrders() async {
     try {
       final headers = await _getHeaders();
-
       final response = await http.get(
         Uri.parse('$_baseUrl/orders/my-orders'),
         headers: headers,
@@ -75,15 +73,61 @@ class OrderService {
     }
   }
 
+  Future<List<Order>> getAllOrders() async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.get(
+        Uri.parse('$_baseUrl/admin/orders'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Order.fromJson(json)).toList();
+      } else if (response.statusCode == 401) {
+        throw Exception('Sesión expirada. Inicia sesión nuevamente');
+      } else {
+        throw Exception('Error al obtener pedidos: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException')) {
+        throw Exception('No se pudo conectar al servidor');
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> updateOrderStatus(int orderId, String newStatus) async {
+    try {
+      final headers = await _getHeaders();
+      final response = await http.put(
+        Uri.parse('$_baseUrl/admin/orders/$orderId/status'),
+        headers: headers,
+        body: json.encode({'status': newStatus}),
+      );
+
+      if (response.statusCode == 401) {
+        throw Exception('Sesión expirada. Inicia sesión nuevamente');
+      } else if (response.statusCode != 200) {
+        throw Exception('Error al actualizar el estado: ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e.toString().contains('SocketException')) {
+        throw Exception('No se pudo conectar al servidor');
+      }
+      rethrow;
+    }
+  }
+
   List<Order> getActiveOrders(List<Order> orders) {
     return orders.where((order) => 
-      order.status == 'PENDING' || order.status == 'IN_PROGRESS'
+      order.status == 'Pendiente' || order.status == 'En proceso'
     ).toList();
   }
 
   List<Order> getCompletedOrders(List<Order> orders) {
     return orders.where((order) => 
-      order.status == 'COMPLETED' || order.status == 'DELIVERED'
+      order.status == 'Completado' || order.status == 'Entregado'
     ).toList();
   }
 }

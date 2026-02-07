@@ -299,7 +299,7 @@ class _AdminUsersViewState extends State<AdminUsersView> {
           key: ValueKey(user.id),
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
-            extentRatio: 0.25, // Ocupa el 25% del ancho
+            extentRatio: 0.25, 
             children: [
               SlidableAction(
                 onPressed: (context) {

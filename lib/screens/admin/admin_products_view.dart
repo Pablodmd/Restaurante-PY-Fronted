@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:restaurante_py/models/product.dart';
@@ -15,7 +17,6 @@ class _AdminProductsViewState extends State<AdminProductsView> {
   @override
   void initState() {
     super.initState();
-    // Cargar productos al iniciar
     Future.microtask(
       () => context.read<ProductProvider>().loadProducts(),
     );
@@ -378,7 +379,6 @@ class _AdminProductsViewState extends State<AdminProductsView> {
   }
 }
 
-// DIÁLOGO DE FORMULARIO
 class ProductFormDialog extends StatefulWidget {
   final Product? product;
 
