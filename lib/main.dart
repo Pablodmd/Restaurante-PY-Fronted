@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:restaurante_py/providers/cart_provider.dart';
 import 'package:restaurante_py/providers/product_provider.dart';
-import 'package:restaurante_py/providers/order_provider.dart';  // ← Agregar
+import 'package:restaurante_py/providers/order_provider.dart';
 import 'screens/auth/login_screen.dart';
 
 void main() {
@@ -15,8 +16,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
-        ChangeNotifierProvider(create: (_) => OrderProvider()),  // ← Agregar
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -30,3 +32,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

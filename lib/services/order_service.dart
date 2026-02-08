@@ -89,10 +89,9 @@ class OrderService {
     try {
       final headers = await _getHeaders();
       final response = await http.get(
-        Uri.parse('$_baseUrl/orders/my-orders'),
-        headers: headers,
+         Uri.parse('$_baseUrl/orders/me'),
+         headers: headers,
       );
-
       if (response.statusCode == 200) {
         final List<dynamic> data = json.decode(response.body);
         
