@@ -37,143 +37,176 @@ class _MenuScreenState extends State<MenuScreen> {
     final cartProvider = context.watch<CartProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Nuestra Carta',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color(0xFF5A2D2D),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const CartScreen()),
-                  );
-                },
-              ),
-              if (cartProvider.itemCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFD4AF37),
-                      shape: BoxShape.circle,
-                    ),
-                    constraints: const BoxConstraints(
-                      minWidth: 18,
-                      minHeight: 18,
-                    ),
-                    child: Text(
-                      '${cartProvider.itemCount}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset("assets/images/ViewBackground.png", fit: BoxFit.cover),
+          Container(color: Colors.black.withOpacity(0.65)),
+
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                      const Text(
+                        'Nuestra Carta',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'serif',
+                        ),
+                      ),
+                      const Spacer(),
+                      Stack(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const CartScreen()),
+                              );
+                            },
+                          ),
+                          if (cartProvider.itemCount > 0)
+                            Positioned(
+                              right: 8,
+                              top: 8,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFD4AF37),
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 18,
+                                  minHeight: 18,
+                                ),
+                                child: Text(
+                                  '${cartProvider.itemCount}',
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-            ],
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // ----------- CATEGORÍAS -----------
-          Container(
-            height: 60,
-            color: Colors.grey.shade100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final isSelected = _selectedCategoryIndex == index;
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCategoryIndex = index;
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFFD4AF37)
-                          : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: isSelected
-                            ? const Color(0xFFD4AF37)
-                            : Colors.grey.shade300,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _categories[index],
-                        style: TextStyle(
-                          color: isSelected
-                              ? Colors.white
-                              : Colors.black87,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
+                Container(
+                  height: 60,
+                  color: Colors.black.withOpacity(0.3),
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    itemCount: _categories.length,
+                    itemBuilder: (context, index) {
+                      final isSelected = _selectedCategoryIndex == index;
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedCategoryIndex = index;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFFD4AF37)
+                                : Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isSelected
+                                  ? const Color(0xFFD4AF37)
+                                  : Colors.grey.shade400,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              _categories[index],
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.black
+                                    : Colors.black87,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                fontFamily: 'serif',
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ),
+                ),
 
-          // ----------- LISTA DE PRODUCTOS -----------
-          Expanded(
-            child: productProvider.isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : productProvider.error != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.error_outline,
-                              size: 60,
-                              color: Colors.red,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Error: ${productProvider.error}',
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                context
-                                    .read<ProductProvider>()
-                                    .loadProducts();
-                              },
-                              child: const Text('Reintentar'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : _buildProductList(productProvider),
+                Expanded(
+                  child: productProvider.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFFD4AF37),
+                          ),
+                        )
+                      : productProvider.error != null
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.error_outline,
+                                    size: 60,
+                                    color: Color(0xFFD4AF37),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Error: ${productProvider.error}',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      context
+                                          .read<ProductProvider>()
+                                          .loadProducts();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFD4AF37),
+                                    ),
+                                    child: const Text(
+                                      'Reintentar',
+                                      style: TextStyle(color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : _buildProductList(productProvider),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -189,7 +222,11 @@ class _MenuScreenState extends State<MenuScreen> {
       return const Center(
         child: Text(
           'No hay productos disponibles en esta categoría',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontFamily: 'serif',
+          ),
         ),
       );
     }

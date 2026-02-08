@@ -19,6 +19,7 @@ class OrdersMenuScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 3,
+      color: Colors.white.withOpacity(0.95),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: onTap,
@@ -69,6 +70,7 @@ class OrdersMenuScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'serif',
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -76,7 +78,7 @@ class OrdersMenuScreen extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey.shade600,
+                        color: Colors.grey.shade700,
                       ),
                     ),
                   ],
@@ -95,57 +97,86 @@ class OrdersMenuScreen extends StatelessWidget {
     final cartProvider = context.watch<CartProvider>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Gestionar Pedidos',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xFF5A2D2D),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            _buildMenuOption(
-              context: context,
-              title: 'Realizar Pedido',
-              subtitle: 'Revisa y confirma tu carrito',
-              icon: Icons.shopping_cart,
-              badgeCount: cartProvider.itemCount,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const CartScreen()),
-                );
-              },
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset("assets/images/ViewBackground.png", fit: BoxFit.cover),
+          Container(color: Colors.black.withOpacity(0.65)),
+
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      ),
+                      const Text(
+                        'Gestionar Pedidos',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'serif',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        _buildMenuOption(
+                          context: context,
+                          title: 'Realizar Pedido',
+                          subtitle: 'Revisa y confirma tu carrito',
+                          icon: Icons.shopping_cart,
+                          badgeCount: cartProvider.itemCount,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const CartScreen()),
+                            );
+                          },
+                        ),
+                        _buildMenuOption(
+                          context: context,
+                          title: 'Pedidos Activos',
+                          subtitle: 'Ver el estado de tus pedidos',
+                          icon: Icons.pending_actions,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const ActiveOrdersScreen()),
+                            );
+                          },
+                        ),
+                        _buildMenuOption(
+                          context: context,
+                          title: 'Historial',
+                          subtitle: 'Consulta tus pedidos anteriores',
+                          icon: Icons.history,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            _buildMenuOption(
-              context: context,
-              title: 'Pedidos Activos',
-              subtitle: 'Ver el estado de tus pedidos',
-              icon: Icons.pending_actions,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ActiveOrdersScreen()),
-                );
-              },
-            ),
-            _buildMenuOption(
-              context: context,
-              title: 'Historial',
-              subtitle: 'Consulta tus pedidos anteriores',
-              icon: Icons.history,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const OrderHistoryScreen()),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
