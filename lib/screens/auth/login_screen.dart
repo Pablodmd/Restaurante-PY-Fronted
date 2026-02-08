@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:restaurante_py/services/auth_service.dart';
 import 'package:restaurante_py/screens/admin/admin_home_view.dart';
@@ -40,7 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      // Redirigir según el rol
       if (role == "ROLE_ADMIN") {
         Navigator.pushReplacement(
           context,
