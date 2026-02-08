@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurante_py/services/auth_service.dart';
 import 'package:restaurante_py/screens/admin/admin_home_view.dart';
-import 'package:restaurante_py/screens/users/home.dart';
+import 'package:restaurante_py/screens/user/home_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
